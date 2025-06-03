@@ -3,14 +3,14 @@ const router = express.Router();
 const Customer = require("../models/Customer");
 
 router.get("/", async (req, res) => {
-  const customers = await Customer.find();
-  res.json(customers);
+  const customer = await Customer.find();
+  res.json(customer);
 });
 
 router.post("/", async (req, res) => {
   try {
-    const customers = new Customer(req.body);
-    const saved = await customers.save();
+    const customer = new Customer(req.body);
+    const saved = await customer.save();
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ error: err.message });

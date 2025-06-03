@@ -1,6 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const barangs = require("./routes/barangs");
+const customers = require("./routes/customers");
+const suppliers = require("./routes/suppliers");
+const pembelians = require("./routes/pembelians");
+const penjualans = require("./routes/penjualans");
 
 const app = express();
 const port = 3000;
@@ -21,6 +25,10 @@ mongoose
 
 // routes
 app.use("/barang", barangs);
+app.use("/customer", customers);
+app.use("/supplier", suppliers);
+app.use("/pembelian", pembelians);
+app.use("/penjualan", penjualans);
 
 // jalankan server
 app.listen(port, () => {
