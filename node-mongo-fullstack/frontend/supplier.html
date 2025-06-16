@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD Supplier</title>
+</head>
+
+<body>
+    <h1>Manajemen Supplier</h1>
+    <form id="supplierForm">
+        <input type="text" id="nama" placeholder="Nama Barang" required />
+        <input type="text" id="nama_supplier" placeholder="Nama Supplier">
+        <input type="text" id="alamat" placeholder="Alamat" required />
+        <input type="number" id="kode_pos" placeholder="Kode Pos" required />
+        <button type="submit">Simpan</button>
+    </form>
+
+    <h2>Daftar Supplier</h2>
+    <ul id="supplierList"></ul>
+
+    <button>
+        <a href="index.html" style="text-decoration: none; color: black;">Kembali</a>
+    </button>
+
+    <script>
+        const apiURL = "http://localhost:3000/api/supplier";
+        let idEdit = null;
+
+        async function loadSupplier() {
+            const res = await fetch(apiURL);
+            const data = await res.json();
+            const list = document.getElementById("supplierList");
+            list.innerHTML = "";
+
+            data.forEach((supplier) => {
+                const li = document.createElement("li");
+                li.textContent = `${supplier.nama} - dari: ${supplier.nama_supplier} - Alamat: ${supplier.alamat} - Kode pos: ${supplier.kode_pos} `;
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.addEventListener("click", () => editSupplier(supplier));
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", () => hapusSupplier(supplier._id));
+
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                list.appendChild(li);
+            });
+        }
+
+        async function tambahAtauEditSupplier(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById("nama").value;
+            const jumlah = document.getElementById("jumlah").value;
+            const tanggal_Supplier = document.getElementById("tanggal_Supplier").value;
+
+            const data = {
+                nama,
+                jumlah,
+                tanggal_Supplier
+            };
+
+            if (idEdit) {
+                await fetch(`${apiURL}/${idEdit}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                idEdit = null;
+            } else {
+                await fetch(apiURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
+
+            document.getElementById("SupplierForm").reset();
+            loadSupplier();
+        }
+
+        async function hapusSupplier(id) {
+            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data Supplier ini?");
+            if (!konfirmasi) return;
+
+            await fetch(`${apiURL}/${id}`, {
+                method: "DELETE"
+            });
+            loadSupplier();
+        }
+
+        function editSupplier(Supplier) {
+            document.getElementById("nama").value = Supplier.nama;
+            document.getElementById("jumlah").value = Supplier.jumlah;
+            document.getElementById("tanggal_Supplier").value = Supplier.tanggal_Supplier.split("T")[0];
+            idEdit = Supplier._id;
+        }
+
+        document.getElementById("SupplierForm").addEventListener("submit", tambahAtauEditSupplier);
+        loadSupplier();
+
+    </script>
+</body>
+
+</html>

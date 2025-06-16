@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD Pembelian</title>
+</head>
+
+<body>
+    <h1>Manajemen Pembelian</h1>
+    <form id="pembelianForm">
+        <input type="text" id="nama" placeholder="Nama Pembelian" required />
+        <input type="number" id="jumlah" placeholder="Jumlah" required />
+        <input type="text" id="supplier" placeholder="Supplier" required />
+        <input type="date" id="tanggal_pembelian" placeholder="Tanggal Pembelian" required />
+        <button type="submit">Simpan</button>
+    </form>
+
+    <h2>Daftar Pembelian</h2>
+    <ul id="pembelianList"></ul>
+
+    <button>
+        <a href="index.html" style="text-decoration: none; color: black;">Kembali</a>
+    </button>
+
+    <script>
+        const apiURL = "http://localhost:3000/api/pembelian";
+        let idEdit = null;
+
+        async function loadPembelian() {
+            const res = await fetch(apiURL);
+            const data = await res.json();
+            const list = document.getElementById("pembelianList");
+            list.innerHTML = "";
+
+            data.forEach((pembelian) => {
+                const tanggal = new Date(pembelian.tanggal_pembelian).toLocaleDateString("id-ID", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+
+                const li = document.createElement("li");
+                li.textContent = `${pembelian.nama} - Jumlah: ${pembelian.jumlah} - Supplier: ${pembelian.supplier} - Tanggal: ${tanggal} `;
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.addEventListener("click", () => editPembelian(pembelian));
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", () => hapusPembelian(pembelian._id));
+
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                list.appendChild(li);
+            });
+        }
+
+        async function tambahAtauEditPembelian(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById("nama").value;
+            const jumlah = document.getElementById("jumlah").value;
+            const supplier = document.getElementById("supplier").value;
+            const tanggal_pembelian = document.getElementById("tanggal_pembelian").value;
+
+            const data = {
+                nama,
+                jumlah,
+                supplier,
+                tanggal_pembelian
+            };
+
+            if (idEdit) {
+                await fetch(`${apiURL}/${idEdit}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                idEdit = null;
+            } else {
+                await fetch(apiURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
+
+            document.getElementById("pembelianForm").reset();
+            loadPembelian();
+        }
+
+        async function hapusPembelian(id) {
+            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data pembelian ini?");
+            if (!konfirmasi) return;
+
+            await fetch(`${apiURL}/${id}`, {
+                method: "DELETE"
+            });
+            loadPembelian();
+        }
+
+        function editPembelian(pembelian) {
+            document.getElementById("nama").value = pembelian.nama;
+            document.getElementById("jumlah").value = pembelian.jumlah;
+            document.getElementById("supplier").value = pembelian.supplier;
+            document.getElementById("tanggal_pembelian").value = pembelian.tanggal_pembelian.split("T")[0];
+            idEdit = pembelian._id;
+        }
+
+        document.getElementById("pembelianForm").addEventListener("submit", tambahAtauEditPembelian);
+        loadPembelian();
+    </script>
+</body>
+
+</html>

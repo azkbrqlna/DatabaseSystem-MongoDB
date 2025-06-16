@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD Penjualan</title>
+</head>
+
+<body>
+    <h1>Manajemen Penjualan</h1>
+    <form id="penjualanForm">
+        <input type="text" id="nama" placeholder="Nama Penjualan" required />
+        <input type="number" id="jumlah" placeholder="Jumlah" required />
+        <input type="date" id="tanggal_penjualan" placeholder="Tanggal Penjualan" required />
+        <button type="submit">Simpan</button>
+    </form>
+
+    <h2>Daftar Penjualan</h2>
+    <ul id="penjualanList"></ul>
+
+    <button>
+        <a href="index.html" style="text-decoration: none; color: black;">Kembali</a>
+    </button>
+
+    <script>
+        const apiURL = "http://localhost:3000/api/penjualan";
+        let idEdit = null;
+
+        async function loadPenjualan() {
+            const res = await fetch(apiURL);
+            const data = await res.json();
+            const list = document.getElementById("penjualanList");
+            list.innerHTML = "";
+
+            data.forEach((penjualan) => {
+                const tanggal = new Date(penjualan.tanggal_penjualan).toLocaleDateString("id-ID", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+
+                const li = document.createElement("li");
+                li.textContent = `${penjualan.nama} - Jumlah: ${penjualan.jumlah} - Tanggal: ${tanggal} `;
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.addEventListener("click", () => editPenjualan(penjualan));
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", () => hapusPenjualan(penjualan._id));
+
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                list.appendChild(li);
+            });
+        }
+
+        async function tambahAtauEditPenjualan(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById("nama").value;
+            const jumlah = document.getElementById("jumlah").value;
+            const tanggal_penjualan = document.getElementById("tanggal_penjualan").value;
+
+            const data = {
+                nama,
+                jumlah,
+                tanggal_penjualan
+            };
+
+            if (idEdit) {
+                await fetch(`${apiURL}/${idEdit}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                idEdit = null;
+            } else {
+                await fetch(apiURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
+
+            document.getElementById("penjualanForm").reset();
+            loadPenjualan();
+        }
+
+        async function hapusPenjualan(id) {
+            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data penjualan ini?");
+            if (!konfirmasi) return;
+
+            await fetch(`${apiURL}/${id}`, {
+                method: "DELETE"
+            });
+            loadPenjualan();
+        }
+
+        function editPenjualan(penjualan) {
+            document.getElementById("nama").value = penjualan.nama;
+            document.getElementById("jumlah").value = penjualan.jumlah;
+            document.getElementById("tanggal_penjualan").value = penjualan.tanggal_penjualan.split("T")[0];
+            idEdit = penjualan._id;
+        }
+
+        document.getElementById("penjualanForm").addEventListener("submit", tambahAtauEditPenjualan);
+        loadPenjualan();
+    </script>
+</body>
+
+</html>
