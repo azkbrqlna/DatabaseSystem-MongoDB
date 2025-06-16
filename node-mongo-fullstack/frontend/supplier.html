@@ -56,13 +56,15 @@
             e.preventDefault();
 
             const nama = document.getElementById("nama").value;
-            const jumlah = document.getElementById("jumlah").value;
-            const tanggal_Supplier = document.getElementById("tanggal_Supplier").value;
+            const nama_supplier = document.getElementById("nama_supplier").value;
+            const alamat = document.getElementById("alamat").value;
+            const kode_pos = document.getElementById("kode_pos").value;
 
             const data = {
                 nama,
-                jumlah,
-                tanggal_Supplier
+                nama_supplier,
+                alamat,
+                kode_pos,
             };
 
             if (idEdit) {
@@ -84,12 +86,12 @@
                 });
             }
 
-            document.getElementById("SupplierForm").reset();
+            document.getElementById("supplierForm").reset();
             loadSupplier();
         }
 
         async function hapusSupplier(id) {
-            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data Supplier ini?");
+            const konfirmasi = confirm("Apakah Anda yakin ingin menghapus data supplier ini?");
             if (!konfirmasi) return;
 
             await fetch(`${apiURL}/${id}`, {
@@ -98,14 +100,15 @@
             loadSupplier();
         }
 
-        function editSupplier(Supplier) {
-            document.getElementById("nama").value = Supplier.nama;
-            document.getElementById("jumlah").value = Supplier.jumlah;
-            document.getElementById("tanggal_Supplier").value = Supplier.tanggal_Supplier.split("T")[0];
-            idEdit = Supplier._id;
+        function editSupplier(supplier) {
+            document.getElementById("nama").value = supplier.nama;
+            document.getElementById("nama_supplier").value = supplier.nama_supplier;
+            document.getElementById("alamat").value = supplier.alamat;
+            document.getElementById("kode_pos").value = supplier.kode_pos;
+            idEdit = supplier._id;
         }
 
-        document.getElementById("SupplierForm").addEventListener("submit", tambahAtauEditSupplier);
+        document.getElementById("supplierForm").addEventListener("submit", tambahAtauEditSupplier);
         loadSupplier();
 
     </script>

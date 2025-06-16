@@ -2,6 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const barangRoutes = require("./routes/barang");
+const pembelianRoutes = require("./routes/pembelian");
+const penjualanRoutes = require("./routes/penjualan");
+const supplierRoutes = require("./routes/supplier");
 
 const app = express();
 app.use(cors());
@@ -14,14 +18,10 @@ mongoose
   })
   .then(() => console.log("MongoDB connected"));
 
-const barangRoutes = require("./routes/barang");
 app.use("/api/barang", barangRoutes);
-
-const pembelianRoutes = require("./routes/pembelian");
 app.use("/api/pembelian", pembelianRoutes);
-
-const penjualanRoutes = require("./routes/penjualan");
 app.use("/api/penjualan", penjualanRoutes);
+app.use("/api/supplier", supplierRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () =>
