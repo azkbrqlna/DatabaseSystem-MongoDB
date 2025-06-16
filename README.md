@@ -1,9 +1,9 @@
-# 2025-Database-System-Praktikum
+# 2025-Database-System-II
 
 > 🗃️ Learning Database System  
 > 🏫 Politeknik Negeri Semarang  
 > 📅 Semester 2 - Year 2025  
-> 📘 Course: Database System (Basis Data 2)
+> 📘 Course: Database System (Sistem Basis Data II)
 
 ---
 
@@ -29,7 +29,6 @@ This repository contains practical assignments and materials from the **Database
 
 - MongoDB
 - Node.js + Express
-- REST API
 - VS Code
 - Postman
 - Compass GUI (MongoDB)
